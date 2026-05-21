@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skytechs — Future-Forward Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #00d4ff;
+    --sky-dim: #007fa3;
+    --deep: #020b18;
+    --panel: #04152a;
+    --panel2: #071e36;
+    --accent: #00ffe7;
+    --accent2: #0077ff;
+    --white: #e8f4ff;
+    --muted: #5a8aaa;
+    --glow: 0 0 18px #00d4ff88, 0 0 40px #00d4ff33;
+    --glow2: 0 0 12px #00ffe755, 0 0 30px #00ffe722;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--deep);
+    color: var(--white);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  .cursor {
+    width: 12px; height: 12px;
+    border: 2px solid var(--sky);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform .12s ease, background .12s ease;
+    box-shadow: var(--glow);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid #00d4ff55;
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform .25s ease;
+  }
+  body:has(a:hover) .cursor, body:has(button:hover) .cursor { transform: scale(2); background: var(--sky); }
+
+  /* ── GRID BACKGROUND ── */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+  .grid-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,119,255,.15) 0%, transparent 70%);
+  }
+
+  /* ── PARTICLES ── */
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 60px;
+    background: linear-gradient(180deg, rgba(2,11,24,.95) 60%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,212,255,.1);
+  }
+
+  .logo-wrap { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+
+  /* ── SVG LOGO ── */
+  .logo-svg { width: 46px; height: 46px; }
+
+  .logo-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.45rem; font-weight: 900;
+    letter-spacing: .12em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--sky); }
+
+  .nav-links { display: flex; gap: 38px; list-style: none; }
+  .nav-links a {
+    font-size: .9rem; font-weight: 500; letter-spacing: .1em;
+    color: var(--muted); text-decoration: none; text-transform: uppercase;
+    transition: color .2s, text-shadow .2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--sky);
+    transition: width .25s ease;
+  }
+  .nav-links a:hover { color: var(--sky); text-shadow: var(--glow); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    font-family: 'Orbitron', sans-serif;
+    font-size: .75rem; font-weight: 700; letter-spacing: .12em;
+    color: var(--deep); background: var(--sky);
+    border: none; padding: 10px 24px; text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background .2s, box-shadow .2s;
+  }
+  .nav-cta:hover { background: var(--accent); box-shadow: var(--glow2); }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    overflow: hidden;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(0,212,255,.3);
+    background: rgba(0,212,255,.06);
+    color: var(--sky); font-size: .78rem; letter-spacing: .18em;
+    text-transform: uppercase; padding: 6px 18px;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    margin-bottom: 32px;
+    animation: fadeDown .8s ease both;
+  }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--sky); box-shadow: var(--glow); animation: pulse 1.4s infinite; }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: .04em;
+    animation: fadeDown .9s .1s ease both;
+  }
+  h1 .line2 { color: var(--sky); display: block; }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--muted); max-width: 560px; margin: 24px auto 0;
+    line-height: 1.7; letter-spacing: .04em;
+    animation: fadeDown 1s .2s ease both;
+  }
+
+  .hero-btns {
+    display: flex; gap: 18px; margin-top: 44px;
+    flex-wrap: wrap; justify-content: center;
+    animation: fadeDown 1s .35s ease both;
+  }
+
+  .btn-primary {
+    font-family: 'Orbitron', sans-serif;
+    font-size: .8rem; font-weight: 700; letter-spacing: .12em;
+    color: var(--deep); background: var(--sky);
+    border: none; padding: 15px 36px; text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all .2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--accent); box-shadow: 0 0 28px #00ffe780; transform: translateY(-2px); }
+
+  .btn-ghost {
+    font-family: 'Orbitron', sans-serif;
+    font-size: .8rem; font-weight: 700; letter-spacing: .12em;
+    color: var(--sky); background: transparent;
+    border: 1px solid rgba(0,212,255,.45); padding: 15px 36px; text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all .2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { background: rgba(0,212,255,.08); box-shadow: var(--glow); transform: translateY(-2px); }
+
+  /* rotating ring */
+  .hero-ring {
+    position: absolute;
+    width: 600px; height: 600px;
+    border: 1px solid rgba(0,212,255,.07);
+    border-radius: 50%;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    animation: spin 28s linear infinite;
+    pointer-events: none;
+  }
+  .hero-ring:nth-child(2) { width: 820px; height: 820px; border-color: rgba(0,119,255,.05); animation-duration: 40s; animation-direction: reverse; }
+  .hero-ring::before {
+    content: ''; position: absolute; top: -3px; left: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--sky); box-shadow: var(--glow);
+    transform: translateX(-50%);
+  }
+
+  /* hero stats */
+  .hero-stats {
+    display: flex; gap: 60px; margin-top: 70px;
+    animation: fadeUp 1s .5s ease both;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.1rem; font-weight: 900;
+    color: var(--sky); display: block;
+    text-shadow: var(--glow);
+  }
+  .stat-label { font-size: .8rem; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+
+  /* ── SECTION COMMONS ── */
+  section { position: relative; z-index: 1; }
+
+  .section-header { text-align: center; margin-bottom: 64px; }
+  .section-tag {
+    display: inline-block;
+    color: var(--sky); font-size: .75rem; letter-spacing: .22em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .section-tag::before, .section-tag::after { content: '—'; margin: 0 8px; opacity: .5; }
+
+  h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900; letter-spacing: .05em;
+    line-height: 1.15;
+  }
+  h2 span { color: var(--sky); }
+
+  .section-desc { color: var(--muted); font-size: 1.05rem; max-width: 520px; margin: 16px auto 0; line-height: 1.7; }
+
+  /* ── SERVICES ── */
+  #services { padding: 120px 60px; }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px; max-width: 1100px; margin: 0 auto;
+  }
+  .service-card {
+    background: var(--panel);
+    border: 1px solid rgba(0,212,255,.1);
+    padding: 36px 30px;
+    position: relative; overflow: hidden;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+    cursor: pointer;
+  }
+  .service-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sky), transparent);
+    transform: scaleX(0); transition: transform .4s;
+  }
+  .service-card:hover { border-color: rgba(0,212,255,.4); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,212,255,.08); }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-icon {
+    width: 54px; height: 54px; margin-bottom: 22px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,212,255,.07);
+    border: 1px solid rgba(0,212,255,.2);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  }
+  .service-icon svg { width: 26px; height: 26px; stroke: var(--sky); fill: none; stroke-width: 1.5; }
+  .service-card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: .95rem; font-weight: 700; letter-spacing: .08em;
+    margin-bottom: 12px;
+  }
+  .service-card p { color: var(--muted); font-size: .95rem; line-height: 1.65; }
+  .card-number {
+    position: absolute; bottom: 18px; right: 22px;
+    font-family: 'Orbitron', sans-serif; font-size: .65rem;
+    color: rgba(0,212,255,.2); letter-spacing: .1em;
+  }
+
+  /* ── ABOUT / GLOW PANEL ── */
+  #about {
+    padding: 120px 60px;
+    background: linear-gradient(180deg, transparent, rgba(0,119,255,.03), transparent);
+  }
+  .about-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .about-visual {
+    position: relative; aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-hex {
+    width: 320px; height: 320px;
+    background: linear-gradient(135deg, var(--panel2), var(--panel));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(0,212,255,.2);
+    position: relative; overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,212,255,.1);
+  }
+  .about-hex::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,212,255,.05) 0%, transparent 60%);
+  }
+  .about-hex-inner { position: relative; text-align: center; }
+  .about-hex-inner svg { width: 90px; height: 90px; stroke: var(--sky); fill: none; stroke-width: 1; }
+  .orbit-dot {
+    position: absolute;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--sky); box-shadow: var(--glow);
+  }
+  .orbit-dot:nth-child(1) { top: 10px; right: 30px; animation: orbit1 3s linear infinite; }
+  .orbit-dot:nth-child(2) { bottom: 30px; left: 10px; animation: orbit1 4s linear infinite reverse; }
+  .orbit-dot:nth-child(3) { top: 40%; right: -10px; width: 5px; height: 5px; animation: orbit1 2.5s linear infinite; }
+
+  .about-text .section-header { text-align: left; margin-bottom: 30px; }
+  .about-text .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.3rem); }
+  .about-p { color: var(--muted); line-height: 1.8; font-size: 1rem; margin-bottom: 18px; }
+  .about-points { list-style: none; margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .about-points li {
+    display: flex; align-items: center; gap: 12px;
+    font-size: .95rem; color: var(--white); letter-spacing: .04em;
+  }
+  .about-points li::before {
+    content: ''; width: 20px; height: 20px; flex-shrink: 0;
+    background: rgba(0,212,255,.12);
+    border: 1px solid rgba(0,212,255,.4);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    display: block;
+    box-shadow: 0 0 8px rgba(0,212,255,.3);
+  }
+
+  /* ── TECH STACK ── */
+  #stack { padding: 80px 60px; }
+  .stack-inner { max-width: 900px; margin: 0 auto; }
+  .stack-row {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    justify-content: center; margin-top: 40px;
+  }
+  .stack-pill {
+    border: 1px solid rgba(0,212,255,.2);
+    background: rgba(0,212,255,.04);
+    color: var(--white); font-size: .82rem; letter-spacing: .1em;
+    text-transform: uppercase; padding: 9px 22px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all .2s;
+  }
+  .stack-pill:hover { background: rgba(0,212,255,.12); border-color: var(--sky); color: var(--sky); box-shadow: var(--glow2); }
+
+  /* ── CONTACT ── */
+  #contact {
+    padding: 120px 60px;
+    background: linear-gradient(180deg, transparent, rgba(0,20,50,.6));
+  }
+  .contact-inner {
+    max-width: 860px; margin: 0 auto;
+    background: var(--panel);
+    border: 1px solid rgba(0,212,255,.15);
+    padding: 64px;
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    position: relative; overflow: hidden;
+  }
+  .contact-inner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--sky) 40%, var(--accent2) 60%, transparent 100%);
+  }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .contact-info h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem; font-weight: 700; letter-spacing: .1em;
+    margin-bottom: 24px;
+  }
+  .contact-item {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 22px;
+  }
+  .contact-icon {
+    width: 42px; height: 42px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,212,255,.08);
+    border: 1px solid rgba(0,212,255,.25);
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .contact-icon svg { width: 18px; height: 18px; stroke: var(--sky); fill: none; stroke-width: 1.8; }
+  .contact-item-label { font-size: .75rem; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; display: block; }
+  .contact-item-value { font-size: 1rem; color: var(--white); font-weight: 600; margin-top: 2px; display: block; }
+
+  .contact-form { display: flex; flex-direction: column; gap: 18px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group label { font-size: .75rem; color: var(--muted); letter-spacing: .14em; text-transform: uppercase; }
+  .form-group input, .form-group textarea {
+    background: rgba(0,212,255,.04);
+    border: 1px solid rgba(0,212,255,.15);
+    color: var(--white);
+    padding: 12px 16px; font-family: 'Rajdhani', sans-serif; font-size: .95rem;
+    outline: none; resize: vertical;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    border-color: rgba(0,212,255,.5);
+    box-shadow: 0 0 12px rgba(0,212,255,.1);
+  }
+  .form-group textarea { min-height: 100px; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid rgba(0,212,255,.1);
+    padding: 36px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 20px;
+    background: rgba(2,11,24,.9);
+  }
+  .footer-logo .logo-text { font-size: 1.1rem; }
+  .footer-text { color: var(--muted); font-size: .82rem; letter-spacing: .06em; }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: .82rem; letter-spacing: .08em; transition: color .2s; }
+  .footer-links a:hover { color: var(--sky); }
+
+  /* ── SCANLINE OVERLAY ── */
+  .scanlines {
+    position: fixed; inset: 0; z-index: 200;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px);
+    pointer-events: none;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin     { to { transform: translate(-50%,-50%) rotate(360deg); } }
+  @keyframes pulse    { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.6); } }
+  @keyframes orbit1   { 0% { opacity: 0; } 20%,80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
+  @keyframes float    { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes blink    { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+  @keyframes glitch   { 0%,100% { clip-path: none; transform: none; } 92% { clip-path: none; } 93% { clip-path: inset(30% 0 50% 0); transform: translate(-3px,0); color: var(--accent); } 95% { clip-path: inset(60% 0 20% 0); transform: translate(3px,0); color: var(--accent2); } 97% { clip-path: none; transform: none; } }
+
+  .about-hex { animation: float 5s ease-in-out infinite; }
+  h1 { animation: glitch 8s infinite, fadeDown .9s .1s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    #services, #about, #stack, #contact { padding: 80px 24px; }
+    .about-inner { grid-template-columns: 1fr; gap: 40px; }
+    .about-visual { display: none; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-inner { padding: 36px 24px; }
+    footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+<canvas id="particles"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo-wrap">
+    <!-- LOGO SVG -->
+    <svg class="logo-svg" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#00ffe7"/>
+          <stop offset="100%" stop-color="#0077ff"/>
+        </linearGradient>
+        <filter id="gf"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Hexagon frame -->
+      <polygon points="23,2 42,12.5 42,33.5 23,44 4,33.5 4,12.5" stroke="url(#lg1)" stroke-width="1.5" fill="rgba(0,212,255,0.06)" filter="url(#gf)"/>
+      <!-- Inner diamond -->
+      <polygon points="23,10 36,23 23,36 10,23" stroke="url(#lg1)" stroke-width="1" fill="rgba(0,212,255,0.08)"/>
+      <!-- Sky rays -->
+      <line x1="23" y1="23" x2="23" y2="10" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="23" y1="23" x2="31" y2="17" stroke="#00d4ff" stroke-width="1" stroke-linecap="round"/>
+      <line x1="23" y1="23" x2="15" y2="17" stroke="#00d4ff" stroke-width="1" stroke-linecap="round"/>
+      <!-- Circuit nodes -->
+      <circle cx="23" cy="10" r="2" fill="#00ffe7"/>
+      <circle cx="36" cy="23" r="1.5" fill="#0077ff"/>
+      <circle cx="10" cy="23" r="1.5" fill="#0077ff"/>
+      <circle cx="23" cy="36" r="2" fill="#00d4ff"/>
+      <!-- Center dot -->
+      <circle cx="23" cy="23" r="3.5" fill="url(#lg1)" opacity=".9"/>
+      <circle cx="23" cy="23" r="1.5" fill="#fff" opacity=".8"/>
+    </svg>
+    <span class="logo-text">SKY<span>TECHS</span></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#stack">Tech Stack</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Started</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-ring"></div>
+  <div class="hero-ring" style="animation-delay:-10s"></div>
+
+  <div class="hero-badge">Innovating the Digital Frontier</div>
+
+  <h1>
+    ENGINEERING
+    <span class="line2">THE FUTURE</span>
+  </h1>
+
+  <p class="hero-sub">
+    Skytechs builds next-generation software solutions that push the boundaries of what technology can achieve — precision-engineered for tomorrow's world.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#services" class="btn-primary">Explore Services</a>
+    <a href="#contact" class="btn-ghost">Contact Us</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Projects Delivered</span></div>
+    <div class="stat"><span class="stat-num">98%</span><span class="stat-label">Client Satisfaction</span></div>
+    <div class="stat"><span class="stat-num">24/7</span><span class="stat-label">System Uptime</span></div>
+    <div class="stat"><span class="stat-num">10+</span><span class="stat-label">Expert Engineers</span></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-header">
+    <p class="section-tag">What We Build</p>
+    <h2>OUR <span>SERVICES</span></h2>
+    <p class="section-desc">End-to-end software solutions architected for scale, performance, and reliability.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <h3>Web Development</h3>
+      <p>High-performance web applications built with cutting-edge frameworks, optimized for speed and user experience.</p>
+      <span class="card-number">01</span>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+      </div>
+      <h3>Mobile Apps</h3>
+      <p>Cross-platform mobile solutions for iOS and Android, delivering native-quality experiences with unified codebases.</p>
+      <span class="card-number">02</span>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      </div>
+      <h3>Cloud & Infrastructure</h3>
+      <p>Scalable cloud architecture on AWS, Azure, and GCP. DevOps pipelines that automate, accelerate, and secure deployments.</p>
+      <span class="card-number">03</span>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <h3>AI & Machine Learning</h3>
+      <p>Intelligent systems and data-driven models that automate decisions, extract insights, and supercharge your business.</p>
+      <span class="card-number">04</span>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>Cybersecurity</h3>
+      <p>Comprehensive security audits, penetration testing, and zero-trust architecture to protect your digital assets.</p>
+      <span class="card-number">05</span>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>Systems Integration</h3>
+      <p>Seamlessly connect legacy systems, APIs, and third-party platforms into unified, high-performing digital ecosystems.</p>
+      <span class="card-number">06</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-visual">
+      <div class="about-hex">
+        <div class="about-hex-inner">
+          <svg viewBox="0 0 90 90">
+            <defs>
+              <linearGradient id="hg" x1="0" y1="0" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00ffe7"/>
+                <stop offset="100%" stop-color="#0077ff"/>
+              </linearGradient>
+            </defs>
+            <polygon points="45,5 80,25 80,65 45,85 10,65 10,25" stroke="url(#hg)" stroke-width="1.5" fill="none"/>
+            <polygon points="45,18 68,30 68,60 45,72 22,60 22,30" stroke="url(#hg)" stroke-width="1" fill="none" opacity=".5"/>
+            <circle cx="45" cy="45" r="14" stroke="url(#hg)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+            <line x1="45" y1="5" x2="45" y2="18" stroke="#00d4ff" stroke-width="1"/>
+            <line x1="80" y1="25" x2="68" y2="30" stroke="#00d4ff" stroke-width="1"/>
+            <line x1="80" y1="65" x2="68" y2="60" stroke="#00d4ff" stroke-width="1"/>
+            <line x1="45" y1="85" x2="45" y2="72" stroke="#00d4ff" stroke-width="1"/>
+            <line x1="10" y1="65" x2="22" y2="60" stroke="#00d4ff" stroke-width="1"/>
+            <line x1="10" y1="25" x2="22" y2="30" stroke="#00d4ff" stroke-width="1"/>
+            <circle cx="45" cy="45" r="4" fill="url(#hg)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="orbit-dot"></div>
+      <div class="orbit-dot"></div>
+      <div class="orbit-dot"></div>
+    </div>
+
+    <div class="about-text">
+      <div class="section-header">
+        <p class="section-tag">Who We Are</p>
+        <h2>BUILT FOR THE <span>DIGITAL AGE</span></h2>
+      </div>
+      <p class="about-p">Skytechs is a Nairobi-based software company at the forefront of technological innovation. We architect, build, and deploy digital systems that don't just meet today's demands — they anticipate tomorrow's challenges.</p>
+      <p class="about-p">Our team of expert engineers, designers, and architects operate at the intersection of creativity and technical excellence, delivering solutions that are as beautiful as they are powerful.</p>
+      <ul class="about-points">
+        <li>Agile development methodologies</li>
+        <li>End-to-end project ownership</li>
+        <li>Enterprise-grade security standards</li>
+        <li>Continuous delivery & deployment</li>
+        <li>Dedicated post-launch support</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="stack">
+  <div class="stack-inner">
+    <div class="section-header">
+      <p class="section-tag">Our Arsenal</p>
+      <h2>TECH <span>STACK</span></h2>
+      <p class="section-desc">We leverage the best modern tools and frameworks to craft bulletproof digital products.</p>
+    </div>
+    <div class="stack-row">
+      <span class="stack-pill">React</span>
+      <span class="stack-pill">Node.js</span>
+      <span class="stack-pill">Python</span>
+      <span class="stack-pill">TypeScript</span>
+      <span class="stack-pill">AWS</span>
+      <span class="stack-pill">Docker</span>
+      <span class="stack-pill">Kubernetes</span>
+      <span class="stack-pill">PostgreSQL</span>
+      <span class="stack-pill">MongoDB</span>
+      <span class="stack-pill">GraphQL</span>
+      <span class="stack-pill">Flutter</span>
+      <span class="stack-pill">TensorFlow</span>
+      <span class="stack-pill">Redis</span>
+      <span class="stack-pill">Next.js</span>
+      <span class="stack-pill">Terraform</span>
+      <span class="stack-pill">Vue.js</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <p class="section-tag">Reach Out</p>
+    <h2>START A <span>PROJECT</span></h2>
+    <p class="section-desc">Have an idea? Let's turn it into reality. Our team is ready to engineer your vision.</p>
+  </div>
+
+  <div class="contact-inner">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>GET IN TOUCH</h3>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.36a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.07 6.07l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div>
+            <span class="contact-item-label">Phone</span>
+            <span class="contact-item-value">0794 070 432</span>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <span class="contact-item-label">Email</span>
+            <span class="contact-item-value">info@skytech.co.ke</span>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <span class="contact-item-label">Location</span>
+            <span class="contact-item-value">Nairobi, Kenya</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="contact-form" id="skytech-form">
+        <div class="form-group">
+          <label for="fs-name">Your Name</label>
+          <input id="fs-name" type="text" name="name" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="fs-email">Email Address</label>
+          <input id="fs-email" type="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="fs-msg">Message</label>
+          <textarea id="fs-msg" name="message" placeholder="Tell us about your project..." required></textarea>
+        </div>
+        <button type="submit" class="btn-primary" id="fs-btn" style="align-self:flex-start; border:none;">Send Message</button>
+        <div id="fs-success" style="display:none; margin-top:16px; padding:14px 20px; background:rgba(0,255,231,.07); border:1px solid rgba(0,255,231,.3); color:#00ffe7; font-size:.9rem; letter-spacing:.06em; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">
+          ✓ &nbsp;Message transmitted! We'll be in touch shortly.
+        </div>
+        <div id="fs-error" style="display:none; margin-top:16px; padding:14px 20px; background:rgba(255,60,60,.07); border:1px solid rgba(255,60,60,.3); color:#ff6b6b; font-size:.9rem; letter-spacing:.06em; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">
+          ✗ &nbsp;Transmission failed. Please try again or call 0794 070 432.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo-wrap footer-logo">
+    <svg class="logo-svg" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="23,2 42,12.5 42,33.5 23,44 4,33.5 4,12.5" stroke="#00d4ff" stroke-width="1.5" fill="rgba(0,212,255,0.06)"/>
+      <circle cx="23" cy="23" r="3.5" fill="#00d4ff" opacity=".9"/>
+    </svg>
+    <span class="logo-text">SKY<span>TECHS</span></span>
+  </a>
+  <p class="footer-text">© 2025 Skytechs Software. All Rights Reserved.</p>
+  <div class="footer-links">
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+// Custom Cursor
+const cur = document.getElementById('cur');
+const ring = document.getElementById('ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  cur.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  rx += (mx - rx) * .12;
+  ry += (my - ry) * .12;
+  ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+  requestAnimationFrame(animCursor);
+})();
+
+// Particles
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, pts = [];
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+function Pt() {
+  this.x = Math.random() * W;
+  this.y = Math.random() * H;
+  this.vx = (Math.random() - .5) * .35;
+  this.vy = (Math.random() - .5) * .35;
+  this.r = Math.random() * 1.5 + .5;
+  this.a = Math.random();
+}
+for (let i = 0; i < 80; i++) pts.push(new Pt());
+
+(function animParticles() {
+  ctx.clearRect(0, 0, W, H);
+  for (let p of pts) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,212,255,${p.a * .5})`;
+    ctx.fill();
+  }
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 120) {
+        ctx.beginPath();
+        ctx.moveTo(pts[i].x, pts[i].y);
+        ctx.lineTo(pts[j].x, pts[j].y);
+        ctx.strokeStyle = `rgba(0,212,255,${(1 - d / 120) * .12})`;
+        ctx.lineWidth = .6;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animParticles);
+})();
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: .1 });
+
+// Formspree AJAX submission
+const fsForm = document.getElementById('skytech-form');
+const fsBtn  = document.getElementById('fs-btn');
+const fsOk   = document.getElementById('fs-success');
+const fsErr  = document.getElementById('fs-error');
+
+fsForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  fsBtn.textContent = 'Transmitting...';
+  fsBtn.style.opacity = '.7';
+  fsBtn.disabled = true;
+  fsOk.style.display = 'none';
+  fsErr.style.display = 'none';
+
+  try {
+    const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(fsForm)
+    });
+    if (res.ok) {
+      fsOk.style.display = 'block';
+      fsForm.reset();
+    } else {
+      fsErr.style.display = 'block';
+    }
+  } catch {
+    fsErr.style.display = 'block';
+  }
+
+  fsBtn.textContent = 'Send Message';
+  fsBtn.style.opacity = '1';
+  fsBtn.disabled = false;
+});
+
+document.querySelectorAll('.service-card, .about-inner, .contact-inner, .stack-pill').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(28px)';
+  el.style.transition = 'opacity .6s ease, transform .6s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
